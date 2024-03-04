@@ -1,0 +1,120 @@
+@font-face {
+    font-family: NanumSquare;
+    src: url("../fonts/NanumSquareR.ttf");
+}
+
+@font-face {
+    font-family: JetBrainsMono;
+    src: url("../fonts/JetBrainsMono-Regular.ttf");
+}
+
+.title-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.sub-title-text {
+    font-size: 16px;
+    color: gray;
+}
+
+.description-text {
+    font-size: 14px;
+    color: black;
+}
+
+.link-text {
+    font-size: 16px;
+    color: #3B82F6;
+    cursor: pointer;
+}
+
+.copy-example-code-text {
+    font-size: 16px;
+    color: #3B82F6;
+}
+
+.container {
+    margin: 16px;
+    gap: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-box {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    margin: 4px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+.overflow-x-scroll {
+    overflow-wrap: break-word;
+    /*overflow-x: scroll;*/
+}
+
+.overflow-y-none {
+    overflow-y: hidden;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mt-16 {
+    margin-top: 16px;
+}
+
+.p-8 {
+    padding: 8px;
+}
+
+.nav-header {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.back-btn-text {
+    color: #3B82F6;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.test-btn {
+    background-color: #3B82F6;
+    display: flex;
+    height: 48px;
+    width: 100px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 16px;
+}
+
+pre > code {
+    font-family: JetBrainsMono;
+}
+
+.signpad-img-preview {
+    margin-top: 16px;
+    width : 100%;
+    height: 300px;
+}

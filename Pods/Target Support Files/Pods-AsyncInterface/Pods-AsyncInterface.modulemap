@@ -1,0 +1,6 @@
+framework module Pods_AsyncInterface {
+  umbrella header "Pods-AsyncInterface-umbrella.h"
+
+  export *
+  module * { export * }
+}
