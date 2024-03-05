@@ -37,7 +37,7 @@ class ViewController: UIViewController {
             
             if let url = param["url"] as? String, self.urlInvalid(url) {
                 DispatchQueue.main.async {
-                   // UIApplication.shared.open(URL(string: url)!, options: [:])
+                    UIApplication.shared.open(URL(string: url)!, options: [:])
                 }
                 
                 result["success"] = true

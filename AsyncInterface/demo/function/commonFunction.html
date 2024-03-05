@@ -21,98 +21,11 @@
 </head>
 
 <script>
-    const MessageHandler = (() => {
-        let number = 0 // 호출 순서를 기억할 번호
-        const holder = {} // Promise의 resolve, reject를 담을 객체
-        
-        const tryParse = (parameters) => {
-            try {
-                return JSON.parse(parameters)
-            } catch (e) {
-                return parameters
-            }
-        }
-        
-            //Javascript -> Native로 요청을 보낼 때 사용
-        const postMessage = (name, parameters = {}) => {
-            return new Promise((resolve, reject) => {
-                const sequence = ++number
-                parameters.metadata = {
-                    sequence
-                }
-                try {
-                    window.webkit.messageHandlers[name].postMessage(parameters)
-                } catch (e) {
-                    reject(e)
-                    return
-                }
-                holder[sequence] = {
-                    resolve,
-                    reject
-                }
-            })
-        }
-        
-        //Native -> Javascript로 응답을 보낼 때 사용
-        const onSuccess = (sequence, parameters) => {
-            const handlers = holder[sequence]
-            if (!handlers) {
-                console.warn('already committed')
-                return
-            }
-            const { resolve } = handlers
-            resolve(tryParse(parameters))
-            delete holder[sequence]
-        }
-        
-          // Native -> Javascript로 응답을 보낼 때 사용
-        const onFailure = (sequence, parameters) => {
-            const handlers = holder[sequence]
-            if (!handlers) {
-                console.warn('already committed')
-                return
-            }
-            const { reject } = handlers
-            const params = tryParse(parameters)
-            let message = 'request rejected'
-            if (params && params.message) {
-                message = params.message
-            }
-            reject(new Error(message))
-            delete holder[sequence]
-        }
-        
-        return {
-            postMessage,
-            onSuccess,
-            onFailure
-        }
-    })()
-
-    // 충돌 방지를 위해 '_ios' namespace에 정의합니다
-    Object.defineProperty(window, '_ios', {
-      value: { MessageHandler },
-      writable: false
-    })
-    
-    const runCommonFunction = async () => {
-        try {
-          const response = await _ios.MessageHandler.postMessage('outLink', { url: 'https://www.naver.com' });
-          
-          console.log(response);
-        } catch (e) {
-          console.error(e.message);
-        }
-    }
-    
-    function getPermission() {
+    function runOutLink() {
         // runAppFunc 함수 호출 예시 [actionName: "commonAction"]
         runAppFunc("outLink").then(function(result) {
+            
             alert(JSON.stringify(result));
-           console.log('runAppFunc data:', result);
-           console.log('runAppFunc data:', result["success"]);
-           showToast(result);
-           
         }).catch(function(error) {
             // 오류가 발생한 경우 처리하는 로직을 이곳에 작성
             console.error('오류 발생: ' + error);
@@ -122,14 +35,11 @@
     /** Common JavascriptInterface */
     function runAppFunc(actionName) {
         return new Promise(function (resolve, reject) {
-        //  if ios {
-          
-              window.webkit.messageHandlers[actionName].postMessage({ url: 'https://www.naver.com' });
-       //   } else {
-       //       window.Android.appAction(actionName, actionData);
-      //    }
-          
-          window.receiveMessageFromNative = function(resultData) {
+            var obj = new Object();
+            obj["url"] = 'https://www.naver.com';
+            window.webkit.messageHandlers[actionName].postMessage(obj);
+  
+            window.receiveMessageFromNative = function(resultData) {
                 console.log('Received result data:', resultData);
                 resolve(resultData);
             };
@@ -160,7 +70,7 @@
             </div>
         </div>
 
-        <div class="test-btn mt-16" onclick="getPermission()">테스트하기</div>
+        <div class="test-btn mt-16" onclick="runOutLink()">테스트하기</div>
     </div>
 </div>
 </body>
