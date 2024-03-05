@@ -22,9 +22,9 @@
 
 <script>
     function runOutLink() {
-        // runAppFunc 함수 호출 예시 [actionName: "commonAction"]
+        // runAppFunc 함수 호출 예시
         runAppFunc("outLink").then(function(result) {
-            
+            // 리턴 받은 결과를 처리하는 로직을 이곳에 작성
             alert(JSON.stringify(result));
         }).catch(function(error) {
             // 오류가 발생한 경우 처리하는 로직을 이곳에 작성
@@ -38,9 +38,11 @@
             var obj = new Object();
             obj["url"] = 'https://www.naver.com';
             window.webkit.messageHandlers[actionName].postMessage(obj);
-  
+            
+            console.log('wait..');
+            
             window.receiveMessageFromNative = function(resultData) {
-                console.log('Received result data:', resultData);
+                console.log('Received result data:' + resultData);
                 resolve(resultData);
             };
         });

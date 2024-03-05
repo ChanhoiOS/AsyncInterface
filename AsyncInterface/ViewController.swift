@@ -90,59 +90,43 @@ class ViewController: UIViewController {
 }
 
 extension ViewController {
-    private func onCallback(_ methodName: String, _ payload: [String : Any]) -> Void {
-        print("callback methodName: ", methodName)
-        onComplete("window._ios.MessageHandler", methodName, payload)
+    private func onCallback(_ payload: [String : Any]) -> Void {
+        onComplete(payload)
     }
     
-    private func onComplete( _ objectName: String, _ methodName: String, _ payloads: [String : Any]) -> Void {
-        var script = "\(objectName).\(methodName);"
-        
-        var payload = ["success": true]
+    private func onComplete(_ payload: [String : Any]) -> Void {
+        var script = ""
         
         if let jsonData = try? JSONSerialization.data(withJSONObject: payload),
-           let jsonString = String(data: jsonData, encoding: .utf8) {
-            //script = "\(objectName).\(methodName),'\(jsonString)');"
-            //script = "result'\(jsonString)';"
-           // script = "receiveMessageFromNative'\(jsonString)';"
-            
-            
+            let jsonString = String(data: jsonData, encoding: .utf8) {
+            script = "receiveMessageFromNative('\(jsonString)');"
         }
-        script = "receiveMessageFromNative({\"success\":true})"
-        //script = "receiveMessageFromNative('success')"
-        
-        print("script: ", script)
-        
+     
         webView?.evaluateJavaScript(script) { (_, error) in
             if let error = error {
-                print("evaluate error: ", error)
+                print("evaluateJavaScript error: ", error)
+            } else {
+                print("evaluateJavaScript script: ", script)
             }
         }
     }
+    
+    /*
+     script = "receiveMessageFromNative({\"success\":true})" Dict
+     script = "receiveMessageFromNative('success')" String
+    */
 }
 
 extension ViewController: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         let name = message.name
-        let body = message.body as? [String: Any]
-        
         print("name: ", name)
-        print("body: ", body)
-                
-//        guard let parameters = message.body as? [String: Any],
-//              let metaJson = parameters["metadata"] as? [String: Any],
-//              let sequence = metaJson["sequence"] as? Int else {
-//            return
-//        }
-//
-      //  let metadata = Metadata(sequence: sequence)
-              
         guard let parameters = message.body as? [String: Any] else { return }
+        print("param: ", parameters)
         
         guard let taskHandler = taskHandlers[name] else {
             let payload: [String: Any] = ["success": false]
-            onCallback("onFailure", payload)
-
+            onCallback(payload)
             return
         }
 
@@ -150,10 +134,10 @@ extension ViewController: WKScriptMessageHandler {
             var payload = try await taskHandler(parameters)
             let result = payload["success"] as? Bool ?? false
             if result {
-                onCallback("onSuccess", payload)
+                onCallback(payload)
             } else {
                 payload = ["success": false]
-                onCallback("onFailure", payload)
+                onCallback(payload)
             }
         }
     }
