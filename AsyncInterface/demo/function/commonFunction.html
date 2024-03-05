@@ -23,30 +23,30 @@
 <script>
     function runAction() {
         var obj = new Object();
-        obj["action"] = "outLink"
-        obj["url"] = 'https://www.naver.com';
-        obj["returnKey"] = "result"
+        obj["action"] = "outLink";
+        obj["url"] = "https://www.naver.com";
+        obj["returnKey"] = "result";
         
         runAppFunc(obj).then(function(result) {
             alert(JSON.stringify(result));
             // TODO..
         }).catch(function(error) {
-            console.error('오류 발생: ' + error);
+            console.error("오류 발생: " + error);
         });
     }
     
     async function asyncRunAction() {
         var obj = new Object();
-        obj["action"] = "outLink"
-        obj["url"] = 'https://www.naver.com';
-        obj["returnKey"] = "result"
+        obj["action"] = "outLink";
+        obj["url"] = "https://www.naver.com";
+        obj["returnKey"] = "result";
 
         try {
             const result = await runAppFunc(obj);
             alert(JSON.stringify(result));
             // TODO..
         } catch (error) {
-            console.error('오류 발생: ' + error);
+            console.error("오류 발생: " + error);
         }
     }
     
@@ -57,9 +57,7 @@
             window.webkit.messageHandlers[obj["action"]].postMessage(obj);
             
             window.result = function(resultData) {
-                console.log('resultData:' + resultData);
-                // result = true or false
-                // data = 데이터 존재 or null
+                console.log("resultData: " + resultData);
                 resolve(resultData);
             };
         });
@@ -82,13 +80,13 @@
             </div>
 
             <div class="column mt-16 p-8 overflow-x-scroll overflow-y-none">
-                <pre><code class="javascript">const response = await _ios.MessageHandler.postMessage('outLink', { url: 'https://www.naver.com' });
+                <pre><code class="javascript">const result = await runAppFunc(obj);
                     console.log(response);
                 </code></pre>
             </div>
         </div>
 
-        <div class="test-btn mt-16" onclick="runAction()">테스트하기</div>
+        <div class="test-btn mt-16" onclick="asyncRunAction()">테스트하기</div>
     </div>
 </div>
 </body>

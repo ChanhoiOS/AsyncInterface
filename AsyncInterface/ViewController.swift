@@ -99,7 +99,8 @@ extension ViewController {
         
         if let jsonData = try? JSONSerialization.data(withJSONObject: result),
             let jsonString = String(data: jsonData, encoding: .utf8) {
-            script = "\(returnKey)('\(jsonString)');"
+            //script = "\(returnKey)('\(jsonString)');"
+            script = "\(returnKey)(\(jsonString));"
         }
      
         webView?.evaluateJavaScript(script) { (_, error) in
