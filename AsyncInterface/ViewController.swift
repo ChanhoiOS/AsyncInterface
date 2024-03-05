@@ -40,13 +40,13 @@ class ViewController: UIViewController {
                     UIApplication.shared.open(URL(string: url)!, options: [:])
                 }
                 
-                result["success"] = true
+                result["result"] = true
                 return result
             } else {
                 do {
-                    throw TaskError(message: "Illegal State Error!!")
+                    throw TaskError(message: "Unvalid Url Error!!")
                 } catch {
-                    result["success"] = false
+                    result["result"] = false
                     return result
                 }
             }
@@ -90,16 +90,16 @@ class ViewController: UIViewController {
 }
 
 extension ViewController {
-    private func onCallback(_ payload: [String : Any]) -> Void {
-        onComplete(payload)
+    private func onCallback(_ returnKey: String, _ result: [String : Any]) -> Void {
+        onComplete(returnKey, result)
     }
     
-    private func onComplete(_ payload: [String : Any]) -> Void {
+    private func onComplete(_ returnKey: String, _ result: [String : Any]) -> Void {
         var script = ""
         
-        if let jsonData = try? JSONSerialization.data(withJSONObject: payload),
+        if let jsonData = try? JSONSerialization.data(withJSONObject: result),
             let jsonString = String(data: jsonData, encoding: .utf8) {
-            script = "result('\(jsonString)');"
+            script = "\(returnKey)('\(jsonString)');"
         }
      
         webView?.evaluateJavaScript(script) { (_, error) in
@@ -119,26 +119,22 @@ extension ViewController {
 
 extension ViewController: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        let name = message.name
+        guard let body = message.body as? [String: Any],
+              let name = body["action"] as? String,
+              let returnKey = body["returnKey"] as? String else { return }
         print("name: ", name)
-        guard let parameters = message.body as? [String: Any] else { return }
-        print("param: ", parameters)
+        print("body: ", body)
+        print("returnKey: ", returnKey)
         
         guard let taskHandler = taskHandlers[name] else {
-            let payload: [String: Any] = ["success": false]
-            onCallback(payload)
+            let result: [String: Any] = ["result": false]
+            onCallback(returnKey, result)
             return
         }
 
         Task {
-            var payload = try await taskHandler(parameters)
-            let result = payload["success"] as? Bool ?? false
-            if result {
-                onCallback(payload)
-            } else {
-                payload = ["success": false]
-                onCallback(payload)
-            }
+            var result = try await taskHandler(body)
+            onCallback(returnKey, result)
         }
     }
 }
