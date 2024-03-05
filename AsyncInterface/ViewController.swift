@@ -99,7 +99,7 @@ extension ViewController {
         
         if let jsonData = try? JSONSerialization.data(withJSONObject: payload),
             let jsonString = String(data: jsonData, encoding: .utf8) {
-            script = "receiveMessageFromNative('\(jsonString)');"
+            script = "result('\(jsonString)');"
         }
      
         webView?.evaluateJavaScript(script) { (_, error) in
@@ -112,8 +112,8 @@ extension ViewController {
     }
     
     /*
-     script = "receiveMessageFromNative({\"success\":true})" Dict
-     script = "receiveMessageFromNative('success')" String
+     script = "result({\"success\":true})" Dict
+     script = "result('success')" String
     */
 }
 
@@ -150,18 +150,17 @@ extension ViewController: WKNavigationDelegate, WKUIDelegate {
     }
     
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Swift.Void) {
+        let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert);
             
-            let alertController = UIAlertController(title: message, message: nil, preferredStyle: .alert);
-            
-            let cancelAction = UIAlertAction(title: "확인", style: .cancel) {
-                _ in completionHandler()
-            }
-            
-            alertController.addAction(cancelAction)
-            DispatchQueue.main.async {
-                self.present(alertController, animated: true, completion: nil)
-            }
+        let cancelAction = UIAlertAction(title: "확인", style: .cancel) {
+            _ in completionHandler()
         }
+            
+        alertController.addAction(cancelAction)
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
 }
 
 extension ViewController {

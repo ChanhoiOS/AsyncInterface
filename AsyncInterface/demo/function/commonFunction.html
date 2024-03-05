@@ -21,33 +21,49 @@
 </head>
 
 <script>
-    function runOutLink() {
-        // runAppFunc 함수 호출 예시
-        runAppFunc("outLink").then(function(result) {
-            // 리턴 받은 결과를 처리하는 로직을 이곳에 작성
+    function runAction() {
+        var obj = new Object();
+        obj["action"] = "outLink"
+        obj["url"] = 'https://www.naver.com';
+        obj["returnKey"] = "result"
+        
+        runAppFunc(obj).then(function(result) {
             alert(JSON.stringify(result));
+            // TODO..
         }).catch(function(error) {
-            // 오류가 발생한 경우 처리하는 로직을 이곳에 작성
             console.error('오류 발생: ' + error);
         });
     }
+    
+    async function asyncRunAction() {
+        var obj = new Object();
+        obj["action"] = "outLink"
+        obj["url"] = 'https://www.naver.com';
+        obj["returnKey"] = "result"
 
-    /** Common JavascriptInterface */
-    function runAppFunc(actionName) {
+        try {
+            const result = await runAppFunc(obj);
+            alert(JSON.stringify(result));
+            // TODO..
+        } catch (error) {
+            console.error('오류 발생: ' + error);
+        }
+    }
+    
+
+    function runAppFunc(obj) {
         return new Promise(function (resolve, reject) {
-            var obj = new Object();
-            obj["url"] = 'https://www.naver.com';
-            window.webkit.messageHandlers[actionName].postMessage(obj);
             
-            console.log('wait..');
+            window.webkit.messageHandlers[obj["action"]].postMessage(obj);
             
-            window.receiveMessageFromNative = function(resultData) {
-                console.log('Received result data:' + resultData);
+            window.result = function(resultData) {
+                console.log('resultData:' + resultData);
+                // result = true or false
+                // data = 데이터 존재 or null
                 resolve(resultData);
             };
         });
     }
-
 </script>
 
 <body>
@@ -72,7 +88,7 @@
             </div>
         </div>
 
-        <div class="test-btn mt-16" onclick="runOutLink()">테스트하기</div>
+        <div class="test-btn mt-16" onclick="runAction2()">테스트하기</div>
     </div>
 </div>
 </body>
